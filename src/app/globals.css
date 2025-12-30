@@ -1,26 +1,283 @@
+/* src/app/globals.css */
+
+/* import Tailwind v4 runtime */
 @import "tailwindcss";
 
+/* small helpers for the mega menu */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Slightly larger focus ring for keyboard users */
+:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* make mega menu panel render on top in case of stacking contexts */
+div[role="presentation"] {
+  z-index: 9999;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Utility: subtle inner shadow for cards (used on page) */
+.card-shadow {
+  box-shadow: 0 14px 40px rgba(15,23,42,0.06);
+  border-radius: 1rem;
+  background: white;
 }
+.btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 12px;
+}
+.btn:hover {
+  background: #f3f4f6;
+}
+
+:root{
+  --primary:#f58220;
+  --secondary:#111827;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --card:#ffffff;
+  --bg:#ffffff;
+  --shadow: 0 14px 40px rgba(17,24,39,.10);
+  --shadow-soft: 0 10px 24px rgba(17,24,39,.08);
+  --radius: 16px;
+}
+
+.siteWrap{
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section{
+  padding: 64px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.h1{
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+  margin: 8px 0 10px;
+}
+
+.h2{
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 950;
+  letter-spacing: -0.01em;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 12px;
+}
+
+.h2:after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:56px;
+  height:4px;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.p{
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 10px 0 0;
+  font-size: 16px;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+}
+
+.btnPrimary{
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.btnGhost{
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 22px;
+  align-items: start;
+}
+
+@media (max-width: 900px){
+  .grid2{ grid-template-columns: 1fr; }
+  .h1{ font-size: 34px; }
+  .section{ padding: 44px 0; }
+}
+
+.hero{
+  position: relative;
+  padding: 74px 0;
+  color: white;
+  overflow: hidden;
+}
+
+.heroBg{
+  position:absolute;
+  inset:0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+}
+
+.heroOverlay{
+  position:absolute;
+  inset:0;
+  background: rgba(17,24,39,.62);
+}
+
+.heroInner{
+  position: relative;
+}
+
+.formCard{
+  background: white;
+  color: var(--text);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.25);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.input{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  outline: none;
+}
+
+.kicker{
+  font-size: 13px;
+  opacity: .85;
+}
+
+.badges{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+  opacity: .95;
+}
+
+.featuresTabs{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.tabBtn{
+  border: 1px solid var(--border);
+  background: white;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tabBtnActive{
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.cardsGrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.iconBox{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: white;
+}
+
+.row{
+  display:flex;
+  gap: 12px;
+  align-items:flex-start;
+}
+
+.techGrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.pill{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: white;
+}
+
+.carousel{
+  display:flex;
+  gap: 14px;
+  overflow-x:auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+}
+
+.slide{
+  min-width: min(420px, 92%);
+  scroll-snap-align: start;
+  padding: 16px;
+}
+

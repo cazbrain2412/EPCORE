@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Image SEO Upload — Map + Metadata</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 12px; }
+    #map { height: 360px; border: 1px solid #ccc; margin-bottom: 8px; }
+    label { display:block; margin-top:8px; font-weight:600; }
+    input[type="text"], textarea { width:100%; box-sizing:border-box; padding:8px; margin-top:4px;}
+    .row { display:flex; gap:8px; }
+    .row > * { flex:1; }
+    .hint { color:#666; font-size:0.9em; margin-top:4px; }
+    button { padding:10px 14px; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <h2>Image SEO Upload</h2>
+
+  <p>Pick an image, fill metadata, click the map (or search) to set coordinates, then click <strong>Upload</strong>. The edited file will be returned as a download.</p>
+
+  <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+
+
+    <label>Image file
+      <input name="image" type="file" accept="image/*" required />
+    </label>
+
+    <label>Image Title
+      <input name="title" type="text" placeholder="Image title (XMP:Title)" />
+    </label>
+
+    <label>Image Description
+      <textarea name="description" rows="2" placeholder="Image description (XMP:Description / IPTC caption)"></textarea>
+    </label>
+
+    <div class="row">
+      <label>Meta Title
+        <input name="metaTitle" type="text" placeholder="SEO meta title / DocumentName" />
+      </label>
+      <label>Meta Description
+        <input name="metaDescription" type="text" placeholder="SEO meta description / IPTC Caption-Abstract" />
+      </label>
+    </div>
+
+    <label>New file name (without extension)
+      <input name="newName" type="text" placeholder="e.g. my_image_seo_name" />
+      <div class="hint">Leave empty to keep original filename.</div>
+    </label>
+
+    <label>Search location (Nominatim)
+      <div style="display:flex; gap:8px;">
+        <input id="searchInput" type="text" placeholder="Type address or place and press Search" />
+        <button id="searchBtn" type="button">Search</button>
+      </div>
+      <div class="hint">Search results appear as markers on the map. Click a marker or click the map to set coordinates.</div>
+    </label>
+
+    <div id="map"></div>
+
+    <div class="row">
+      <label>Latitude
+        <input id="lat" name="lat" type="text" placeholder="Latitude (decimal)" />
+      </label>
+      <label>Longitude
+        <input id="lon" name="lon" type="text" placeholder="Longitude (decimal)" />
+      </label>
+    </div>
+
+    <button type="submit">Upload (download edited file)</button>
+  </form>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Initialize map
+    const map = L.map('map').setView([12.9716, 77.5946], 6); // default view
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // marker used for selected location
+    let selectedMarker = null;
+    function setMarker(latlng, label) {
+      if (selectedMarker) selectedMarker.remove();
+      selectedMarker = L.marker(latlng, {draggable:true}).addTo(map);
+      if (label) selectedMarker.bindPopup(label).openPopup();
+      // update fields
+      document.getElementById('lat').value = latlng.lat.toFixed(7);
+      document.getElementById('lon').value = latlng.lng.toFixed(7);
+      // drag updates
+      selectedMarker.on('dragend', (e) => {
+        const p = e.target.getLatLng();
+        document.getElementById('lat').value = p.lat.toFixed(7);
+        document.getElementById('lon').value = p.lng.toFixed(7);
+      });
+    }
+
+    // click on map sets coords
+    map.on('click', (e) => {
+      setMarker(e.latlng, 'Selected location');
+    });
+
+    // Search using Nominatim
+    document.getElementById('searchBtn').addEventListener('click', async () => {
+      const q = document.getElementById('searchInput').value.trim();
+      if (!q) return alert('Type a place to search');
+
+      const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(q);
+      try {
+        const res = await fetch(url, { headers: { 'Accept-Language': 'en' }});
+        const results = await res.json();
+        if (!results || results.length === 0) return alert('No results found.');
+
+        // remove old search markers
+        document.querySelectorAll('.searchMarker').forEach(node => node.remove());
+
+        const bounds = [];
+        results.slice(0, 5).forEach((r) => {
+          const lat = parseFloat(r.lat);
+          const lon = parseFloat(r.lon);
+          const marker = L.marker([lat, lon]);
+          marker.addTo(map);
+          marker._icon.classList.add('searchMarker');
+          marker.on('click', () => setMarker({lat, lng: lon}, r.display_name));
+          bounds.push([lat, lon]);
+        });
+
+        if (bounds.length) map.fitBounds(bounds, { maxZoom: 16 });
+      } catch (err) {
+        alert('Search failed: ' + err.message);
+      }
+    });
+
+    // manually updating lat/lon -> moves marker
+    function updateMarkerFromInputs() {
+      const lat = parseFloat(document.getElementById('lat').value);
+      const lon = parseFloat(document.getElementById('lon').value);
+      if (!isNaN(lat) && !isNaN(lon)) {
+        setMarker({lat, lng: lon});
+        map.panTo([lat, lon]);
+      }
+    }
+    document.getElementById('lat').addEventListener('change', updateMarkerFromInputs);
+    document.getElementById('lon').addEventListener('change', updateMarkerFromInputs);
+  </script>
+</body>
+</html>
+
