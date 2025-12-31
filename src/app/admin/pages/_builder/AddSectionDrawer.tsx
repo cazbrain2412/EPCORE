@@ -78,7 +78,8 @@ function template(type: AnySection["type"]): AnySection {
       };
 
     case "costFactors":
-      return { id, type, title: "Cost Factors", data: { h2: "Cost Factors", items: [] } };
+      return { id, type, title: "Cost Factors", data: { h2: "Cost Factors", bullets: [] } };
+
 
     case "comparisonTable":
       return { id, type, title: "Comparison Table", data: { h2: "Comparison", rows: [] } };
