@@ -78,20 +78,24 @@ function template(type: AnySection["type"]): AnySection {
       };
 
     case "costFactors":
-      return { id, type, title: "Cost Factors", data: { h2: "Cost Factors", bullets: [] } };
+     return { id, type, title: "Cost Factors", data: { h2: "Cost Factors", bullets: [] } };
+
+      
 
 
     case "comparisonTable":
-      return {
-  id,
-  type,
-  title: "Comparison Table",
-  data: { h2: "Comparison", leftTitle: "Option A", rightTitle: "Option B", rows: [] },
-};
+  return {
+    id,
+    type,
+    title: "Comparison Table",
+    data: { h2: "Comparison", leftTitle: "Option A", rightTitle: "Option B", rows: [] },
+  };
+
 
 
     case "whyChoose":
-  return { id, type, title: "Why Choose", data: { h2: "Why Choose Us", bullets: [] } };
+     return { id, type, title: "Why Choose", data: { h2: "Why Choose Us", bullets: [] } };
+
 
       
 
@@ -105,7 +109,21 @@ function template(type: AnySection["type"]): AnySection {
       return { id, type, title: "Testimonials", data: { h2: "Testimonials", items: [] } };
 
     case "techStack":
-      return { id, type, title: "Tech Stack", data: { h2: "Tech Stack", items: [] } };
+  return {
+    id,
+    type,
+    title: "Tech Stack",
+    data: {
+      h2: "Tech Stack",
+      tabs: [
+        { label: "Frontend", items: [] },
+        { label: "Backend", items: [] },
+        { label: "Database", items: [] },
+      ],
+    },
+  };
+
+      
 
     case "faqs":
       return { id, type, title: "FAQs", data: { h2: "FAQs", faqs: [], enableSchema: true } };
