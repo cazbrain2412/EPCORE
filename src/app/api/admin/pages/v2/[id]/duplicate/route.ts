@@ -12,14 +12,18 @@ export async function POST(_: Request, { params }: Ctx) {
   const { id } = await params;
   await dbConnect();
 
-  const original = await Page.findById(id).lean();
+    const originalRaw = await Page.findById(id).lean();
+  const original = (Array.isArray(originalRaw) ? originalRaw[0] : originalRaw) as any;
   if (!original) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const baseSlug = original?.slug || original?.seo?.slug || "page";
+  const baseSlug = original.slug || original.seo?.slug || "page";
+
+
 
   let n = 1;
   let newSlug = makeCopySlug(baseSlug, n);
-  while (await Page.exists({ slug: newSlug })) {
+  while (await Page.exists({ $or: [{ slug: newSlug }, { "seo.slug": newSlug }] })) {
+
     n += 1;
     newSlug = makeCopySlug(baseSlug, n);
   }
