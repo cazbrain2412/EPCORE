@@ -7,7 +7,10 @@ export async function GET() {
   try {
     await dbConnect();
     // Count documents in the 'users' collection
-    const count = await mongoose.connection.db.collection("users").countDocuments();
+    const db = mongoose.connection.db;
+if (!db) throw new Error("MongoDB db is not ready yet");
+const count = await db.collection("users").countDocuments();
+
     return NextResponse.json({ ok: true, users: count });
   } catch (err) {
     console.error("test-db error:", err);
