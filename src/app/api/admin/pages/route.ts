@@ -1,20 +1,39 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongoose";
-import Page from "@/lib/models/Page";
+import dbConnect from "@/lib/mongoose";
+import Page from "@/models/Page";
 
-
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    await connectDB();
-    const pages = await Page.find().sort({ createdAt: -1 });
-    return NextResponse.json({ success: true, data: pages });
-  } catch (error) {
+    await dbConnect();
+
+    const body = await req.json();
+    const { title } = body;
+
+    if (!title) {
+      return NextResponse.json(
+        { error: "Title is required" },
+        { status: 400 }
+      );
+    }
+
+    const page = await Page.create({
+      title,
+      status: "draft",
+      seo: { slug: title.toLowerCase().replace(/\s+/g, "-") },
+      sections: [],
+    });
+
+    return NextResponse.json({ page }, { status: 201 });
+  } catch (err: any) {
+    console.error("CREATE PAGE ERROR:", err);
+
     return NextResponse.json(
-      { success: false, message: "Failed to fetch pages" },
+      { error: err?.message || "Internal Server Error" },
       { status: 500 }
     );
   }
 }
+
 
 export async function POST(req: Request) {
   try {
