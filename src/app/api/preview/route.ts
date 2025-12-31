@@ -1,8 +1,13 @@
-import { draftMode } from "next/headers";
 import { NextResponse } from "next/server";
+import { draftMode } from "next/headers";
 
-export async function GET() {
-  (await draftMode()).enable();
-  return NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_SITE_URL));
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const redirectTo = searchParams.get("redirect") || "/";
+
+  const dm = await draftMode();
+  dm.enable();
+
+  return NextResponse.redirect(new URL(redirectTo, req.url));
 }
 
