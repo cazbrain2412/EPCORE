@@ -171,6 +171,8 @@ export type PageDocShape = {
   title: string;
   status: PageStatus;
   seo: SeoFields;
+  theme?: { primary?: string; secondary?: string };
+
   sections: AnySection[];
   updatedAt: string;
   publishedAt?: string;
