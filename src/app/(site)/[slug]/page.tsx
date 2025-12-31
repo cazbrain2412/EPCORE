@@ -28,9 +28,13 @@ export default async function SitePage({ params }: { params: Promise<{ slug: str
   await dbConnect();
 
   const page = await Page.findOne({ "seo.slug": slug, status: "published" }).lean();
-  if (!page) return notFound();
+  const pageDoc: any = Array.isArray(page) ? page[0] : page;
+if (!pageDoc) return notFound();
 
-  const faqsSection = (page.sections || []).find((s: any) => s.type === "faqs" && s.data?.enableSchema);
+const faqsSection = (pageDoc.sections || []).find((s: any) => s.type === "faqs" && s.data?.enableSchema);
+
+
+  
   const schema = faqsSection?.data?.faqs?.length ? faqSchema(faqsSection.data.faqs) : null;
 
   const theme = (page as any).theme || {};
