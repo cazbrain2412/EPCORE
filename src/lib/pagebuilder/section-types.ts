@@ -80,7 +80,9 @@ export type FeatureTabsData = {
 export type RichContentData = {
   h2?: string;
   content: RichText;
+  image?: { url: string; alt?: string; position?: "left" | "right" | "top" | "bottom" };
 };
+
 
 export type CostFactorsData = {
   h2: string;
