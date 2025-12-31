@@ -54,7 +54,8 @@ const faqsSection = (pageDoc.sections || []).find((s: any) => s.type === "faqs" 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       ) : null}
 
-      {(page.sections || []).map((sec: any) => {
+      {(pageDoc.sections || []).map((sec: any) => {
+
         if (sec.isHidden) return null;
 
         switch (sec.type) {
