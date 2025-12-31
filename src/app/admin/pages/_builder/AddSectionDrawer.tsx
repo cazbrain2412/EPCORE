@@ -82,10 +82,18 @@ function template(type: AnySection["type"]): AnySection {
 
 
     case "comparisonTable":
-      return { id, type, title: "Comparison Table", data: { h2: "Comparison", rows: [] } };
+      return {
+  id,
+  type,
+  title: "Comparison Table",
+  data: { h2: "Comparison", leftTitle: "Option A", rightTitle: "Option B", rows: [] },
+};
+
 
     case "whyChoose":
-      return { id, type, title: "Why Choose", data: { h2: "Why Choose Us", items: [] } };
+  return { id, type, title: "Why Choose", data: { h2: "Why Choose Us", bullets: [] } };
+
+      
 
     case "processTimeline":
       return { id, type, title: "Process Timeline", data: { h2: "Process", steps: [] } };
