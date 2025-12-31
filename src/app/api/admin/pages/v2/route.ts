@@ -20,34 +20,51 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  await dbConnect();
-  const body = await req.json().catch(() => ({}));
-  const title = body?.title?.trim() || "New Page";
+  try {
+    await dbConnect();
 
-  const base = slugify(title, { lower: true, strict: true }) || "page";
-  let n = 1;
-  let slug = makeSlug(base, n);
+    const body = await req.json().catch(() => ({}));
+    const title = body?.title?.trim() || "New Page";
 
-  while (await Page.exists({ slug })) {
-    n += 1;
-    slug = makeSlug(base, n);
+    const base = slugify(title, { lower: true, strict: true }) || "page";
+    let n = 1;
+    let slug = makeSlug(base, n);
+
+    while (await Page.exists({ slug })) {
+      n += 1;
+      slug = makeSlug(base, n);
+    }
+
+    const created = await Page.create({
+      title,
+      slug,
+      status: "draft",
+      seo: {
+        slug,
+        metaTitle: title,
+        metaDescription: "Write your SEO meta description.",
+        canonicalUrl: "",
+        ogImageUrl: "",
+        noIndex: false,
+      },
+      sections: [],
+      publishedAt: null,
+    });
+
+    return NextResponse.json(
+      { ok: true, page: created },
+      { status: 201 }
+    );
+  } catch (err: any) {
+    console.error("Create page failed:", err);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: err?.message || "Failed to create page",
+      },
+      { status: 500 }
+    );
   }
-
-  const created = await Page.create({
-    title,
-    slug, // ✅ top-level
-    status: "draft",
-    seo: {
-      slug, // ✅ seo.slug
-      metaTitle: title,
-      metaDescription: "Write your SEO meta description.",
-      canonicalUrl: "",
-      ogImageUrl: "",
-      noIndex: false,
-    },
-    sections: [],
-    publishedAt: null,
-  });
-
-  return NextResponse.json({ page: created }, { status: 201 });
 }
+
