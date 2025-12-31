@@ -8,28 +8,46 @@ export default function AdminCreatePage() {
   const [err, setErr] = useState<string | null>(null);
 
   async function create() {
-    setErr(null);
-    const t = title.trim();
-    if (!t) {
-      setErr("Please enter a page title.");
-      return;
+  setErr(null);
+  const t = title.trim();
+  if (!t) {
+    setErr("Please enter a page title.");
+    return;
+  }
+
+  setBusy(true);
+
+  try {
+    const res = await fetch("/api/admin/pages/v2", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: t }),
+    });
+
+    let data: any = null;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error("Server returned an invalid response");
     }
 
-    setBusy(true);
-    try {
-      const res = await fetch("/api/admin/pages/v2", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: t }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Create failed");
-      window.location.href = `/admin/pages/${data.page._id}`;
-    } catch (e: any) {
-      setErr(e?.message || "Create failed");
-      setBusy(false);
+    if (!res.ok) {
+      throw new Error(data?.error || "Create failed");
     }
+
+    window.location.href = `/admin/pages/${data.page._id}`;
+  } catch (e: any) {
+    setErr(e?.message || "Create failed");
+    setBusy(false);
   }
+}
+
+      
+
+
+
+
+
 
   return (
     <div style={{ padding: 24 }}>
