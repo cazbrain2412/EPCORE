@@ -1,7 +1,7 @@
 // src/app/api/admin/users/route.ts
 import { NextResponse } from "next/server";
 // from src/app/api/admin/users -> go up 5 levels to reach project root, then /lib/mongoose
-import dbConnect from "../../../../../lib/mongoose";
+import dbConnect from "@/lib/mongoose";
 import User from "../../../../models/User";
 import jwt from "jsonwebtoken";
 
